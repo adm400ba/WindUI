@@ -141,7 +141,7 @@ function DropdownMenu.New(Config, Dropdown, Element, Type)
 				or ""
 		end
 		if Dropdown.UIElements.Dropdown then
-			Dropdown.UIElements.Dropdown.Frame.Frame.TextLabel.Text = Str
+			Dropdown.UIElements.Dropdown.Frame.Frame.TextLabel.Text = (Str == "" and "
 		end
 	end
 	local function Callback(customCallback, skipDisplay)
@@ -222,10 +222,21 @@ function DropdownMenu.New(Config, Dropdown, Element, Type)
 			return
 		end
 		local ScrollingFrame = Dropdown.UIElements.Menu.Frame.ScrollingFrame
+		local CleanValues = {}
+		local SeenValues = {}
+		for _, Value in ipairs(Values or {}) do
+			local IsDivider = typeof(Value) == "table" and Value.Type == "Divider"
+			local Name = IsDivider and ("__DIVIDER__" .. tostring(#CleanValues + 1)) or tostring(typeof(Value) == "table" and Value.Title or Value or "")
+			if IsDivider or not SeenValues[Name] then
+				SeenValues[Name] = true
+				table.insert(CleanValues, Value)
+			end
+		end
+		Values = CleanValues
+		Dropdown.Values = Values
 		local OldCache = Dropdown._RefreshCache or {}
 		local NewCache = {}
 		local KeepElements = {}
-		local Occurrences = {}
 		if Dropdown.SearchBarEnabled then
 			if not SearchLabel then
 				SearchLabel = CreateInput("Search...", "search", Dropdown.UIElements.Menu, nil, function(val)
@@ -246,37 +257,12 @@ function DropdownMenu.New(Config, Dropdown, Element, Type)
 			end
 		end
 		Dropdown.Tabs = {}
-
-		-- Remove duplicate visible options while preserving the first occurrence.
-		-- Duplicate titles were previously assigned different cache keys, causing
-		-- the same option to be rendered multiple times.
-		local UniqueValues = {}
-		local SeenValues = {}
-		for _, Tab in ipairs(Values or {}) do
-			local IsDivider = typeof(Tab) == "table" and Tab.Type == "Divider"
+		local GetKey = function(Tab, IsDivider, Index)
 			if IsDivider then
-				UniqueValues[#UniqueValues + 1] = Tab
-			else
-				local Title = typeof(Tab) == "table" and Tab.Title or Tab
-				local Key = typeof(Title) .. "\0" .. tostring(Title or "")
-				if not SeenValues[Key] then
-					SeenValues[Key] = true
-					UniqueValues[#UniqueValues + 1] = Tab
-				end
+				return "__DIVIDER__" .. tostring(Index)
 			end
-		end
-		Values = UniqueValues
-
-		local GetKey = function(Tab, IsDivider)
-			local BaseName
-			if IsDivider then
-				BaseName = "__DIVIDER__"
-			else
-				BaseName = typeof(Tab) == "table" and Tab.Title or Tab
-			end
-			BaseName = tostring(BaseName or "")
-			Occurrences[BaseName] = (Occurrences[BaseName] or 0) + 1
-			return BaseName .. "\0" .. Occurrences[BaseName]
+			local Name = typeof(Tab) == "table" and Tab.Title or Tab
+			return tostring(Name or "")
 		end
 		local UpdateTab = function(TabMain, Tab)
 			local Name = typeof(Tab) == "table" and Tab.Title or Tab
@@ -555,7 +541,7 @@ function DropdownMenu.New(Config, Dropdown, Element, Type)
 		end
 		for Index, Tab in next, Values do
 			local IsDivider = typeof(Tab) == "table" and Tab.Type == "Divider"
-			local Key = GetKey(Tab, IsDivider)
+			local Key = GetKey(Tab, IsDivider, Index)
 			if not IsDivider then
 				local TabMain = OldCache[Key]
 				local IsNew = false
@@ -596,7 +582,6 @@ function DropdownMenu.New(Config, Dropdown, Element, Type)
 			end
 		end
 		Dropdown._RefreshCache = NewCache
-		Dropdown.Values = Values
 		local SearchValue
 		if SearchLabel then
 			pcall(function()
@@ -628,6 +613,7 @@ function DropdownMenu.New(Config, Dropdown, Element, Type)
 		RecalculateCanvasSize()
 		RecalculateListSize()
 		Callback(nil, true)
+		Dropdown.Values = Values
 	end
 	DropdownModule:Refresh(Dropdown.Values)
 	function DropdownModule:Select(Items)
