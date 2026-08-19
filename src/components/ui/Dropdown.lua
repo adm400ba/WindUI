@@ -141,7 +141,7 @@ function DropdownMenu.New(Config, Dropdown, Element, Type)
 				or ""
 		end
 		if Dropdown.UIElements.Dropdown then
-			Dropdown.UIElements.Dropdown.Frame.Frame.TextLabel.Text = (Str == "" and "
+			Dropdown.UIElements.Dropdown.Frame.Frame.TextLabel.Text = Str
 		end
 	end
 	local function Callback(customCallback, skipDisplay)
@@ -246,6 +246,27 @@ function DropdownMenu.New(Config, Dropdown, Element, Type)
 			end
 		end
 		Dropdown.Tabs = {}
+
+		-- Remove duplicate visible options while preserving the first occurrence.
+		-- Duplicate titles were previously assigned different cache keys, causing
+		-- the same option to be rendered multiple times.
+		local UniqueValues = {}
+		local SeenValues = {}
+		for _, Tab in ipairs(Values or {}) do
+			local IsDivider = typeof(Tab) == "table" and Tab.Type == "Divider"
+			if IsDivider then
+				UniqueValues[#UniqueValues + 1] = Tab
+			else
+				local Title = typeof(Tab) == "table" and Tab.Title or Tab
+				local Key = typeof(Title) .. "\0" .. tostring(Title or "")
+				if not SeenValues[Key] then
+					SeenValues[Key] = true
+					UniqueValues[#UniqueValues + 1] = Tab
+				end
+			end
+		end
+		Values = UniqueValues
+
 		local GetKey = function(Tab, IsDivider)
 			local BaseName
 			if IsDivider then
@@ -575,6 +596,7 @@ function DropdownMenu.New(Config, Dropdown, Element, Type)
 			end
 		end
 		Dropdown._RefreshCache = NewCache
+		Dropdown.Values = Values
 		local SearchValue
 		if SearchLabel then
 			pcall(function()
@@ -606,7 +628,6 @@ function DropdownMenu.New(Config, Dropdown, Element, Type)
 		RecalculateCanvasSize()
 		RecalculateListSize()
 		Callback(nil, true)
-		Dropdown.Values = Values
 	end
 	DropdownModule:Refresh(Dropdown.Values)
 	function DropdownModule:Select(Items)
