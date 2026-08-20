@@ -792,21 +792,6 @@ function DropdownMenu.New(Config, Dropdown, Element, Type)
 				end
 			end
 
-			if Dropdown.Multi then
-				if typeof(Dropdown.Value) == "table" then
-					for i, v in ipairs(Dropdown.Value) do
-						if v == ValueToRemove or (typeof(v) == "table" and v.Title == ValueToRemove) then
-							table.remove(Dropdown.Value, i)
-							break
-						end
-					end
-				end
-			else
-				if Dropdown.Value == ValueToRemove or (typeof(Dropdown.Value) == "table" and Dropdown.Value.Title == ValueToRemove) then
-					Dropdown.Value = nil
-				end
-			end
-
 			DropdownModule:Display()
 			RecalculateCanvasSize()
 			RecalculateListSize()
