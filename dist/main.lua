@@ -28914,10 +28914,6 @@ if ah.Icon then
 ai=ab.Image(ah.Icon,ah.Icon,0,af.Window,"Tag",false)
 
 ai.Size=UDim2.new(0,ah.IconSize,0,ah.IconSize)
-ai.ImageLabel.ImageColor3=typeof(ah.Color)=="Color3"
-and ab.GetTextColorForHSB(ah.Color)
-or typeof(ah.Color)=="string"
-and(ab.GetTextColorForHSB(ab.GetThemeProperty(ah.Color,ab.Theme)))
 end
 
 local aj=ac("TextLabel",{
@@ -28934,19 +28930,25 @@ local ak
 
 if typeof(ah.Color)=="table"then
 ak=ac"UIGradient"
+
 for al,am in next,ah.Color do
 ak[al]=am
 end
 
-aj.TextColor3=GetTagTextColor(ah.Color,ak)
-if ai then
-ai.ImageLabel.ImageColor3=GetTagTextColor(ah.Color,ak)
-end
-else
-aj.TextColor3=GetTagTextColor(ah.Color)
+local al=GetTagTextColor(ah.Color,ak)
+
+aj.TextColor3=al
 
 if ai then
-ai.ImageLabel.ImageColor3=GetTagTextColor(ah.Color)
+ai.ImageLabel.ImageColor3=al
+end
+else
+local al=GetTagTextColor(ah.Color)
+
+aj.TextColor3=al
+
+if ai then
+ai.ImageLabel.ImageColor3=al
 end
 end
 
@@ -29000,30 +29002,52 @@ end
 
 function ah.SetColor(am,an)
 ah.Color=an
+
 if typeof(an)=="table"then
-local ao=al:FindFirstChildOfClass"UIGradient"or ac("UIGradient",{Parent=al})
+local ao=al:FindFirstChildOfClass"UIGradient"or ac("UIGradient",{
+Parent=al,
+})
+
 for ap,aq in next,an do
 ao[ap]=aq
 end
 
 local ap=GetTagTextColor(an,ao)
 
-ad(aj,0.06,{TextColor3=ap}):Play()
+ad(aj,0.06,{
+TextColor3=ap,
+}):Play()
 
 if ai then
-ad(ai.ImageLabel,0.06,{ImageColor3=ap}):Play()
+ad(ai.ImageLabel,0.06,{
+ImageColor3=ap,
+}):Play()
 end
 
-ad(al,0.06,{ImageColor3=Color3.new(1,1,1)}):Play()
+ad(al,0.06,{
+ImageColor3=Color3.new(1,1,1),
+}):Play()
 else
 if ak then
 ak:Destroy()
+ak=nil
 end
-ad(aj,0.06,{TextColor3=ab.GetTextColorForHSB(an)}):Play()
+
+local ao=ab.GetTextColorForHSB(an)
+
+ad(aj,0.06,{
+TextColor3=ao,
+}):Play()
+
 if ai then
-ad(ai.ImageLabel,0.06,{ImageColor3=ab.GetTextColorForHSB(an)}):Play()
+ad(ai.ImageLabel,0.06,{
+ImageColor3=ao,
+}):Play()
 end
-ad(al,0.06,{ImageColor3=an}):Play()
+
+ad(al,0.06,{
+ImageColor3=an,
+}):Play()
 end
 
 return ah
@@ -29043,12 +29067,17 @@ ai=ab.Image(an,an,0,af.Window,"Tag",false)
 ai.Size=UDim2.new(0,ah.IconSize,0,ah.IconSize)
 ai.Parent=al:FindFirstChild"Content"
 
-if typeof(ah.Color)=="Color3"then
-ai.ImageLabel.ImageColor3=ab.GetTextColorForHSB(ah.Color)
-elseif typeof(ah.Color)=="table"then
-ai.ImageLabel.ImageColor3=GetTagTextColor(ah.Color,ak)
+local ao
+
+if typeof(ah.Color)=="table"and ak then
+ao=GetTagTextColor(ah.Color,ak)
+else
+ao=GetTagTextColor(ah.Color)
 end
+
+ai.ImageLabel.ImageColor3=ao
 end
+
 return ah
 end
 
@@ -29058,34 +29087,18 @@ return ah
 end
 
 ab:OnThemeChange(function(am,an)
-if typeof(ah.Color)=="Color3"then
-aj.TextColor3=ab.GetTextColorForHSB(ah.Color)
+local ao
 
-if ai then
-ai.ImageLabel.ImageColor3=
-ab.GetTextColorForHSB(ah.Color)
+if typeof(ah.Color)=="table"and ak then
+ao=GetTagTextColor(ah.Color,ak)
+else
+ao=GetTagTextColor(ah.Color)
 end
-elseif typeof(ah.Color)=="string"then
-local ao=ab.GetTextColorForHSB(
-ab.GetThemeProperty(ah.Color,ab.Theme)
-)
 
 aj.TextColor3=ao
 
 if ai then
 ai.ImageLabel.ImageColor3=ao
-end
-elseif typeof(ah.Color)=="table"and ak then
-local ao=GetTagTextColor(
-ah.Color,
-ak
-)
-
-aj.TextColor3=ao
-
-if ai then
-ai.ImageLabel.ImageColor3=ao
-end
 end
 end)
 
