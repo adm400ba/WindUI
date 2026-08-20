@@ -33123,6 +33123,31 @@ ax.UIElements.TabIcon.ImageLabel.ImageTransparency=0.6
 end
 end
 
+if ap.Multi then
+local az=false
+if typeof(ap.Value)=="table"then
+for aA,aB in ipairs(ap.Value)do
+local b=typeof(aB)=="table"and aB.Title or aB
+if b==ax.Name then
+az=true
+break
+end
+end
+end
+ax.Selected=az
+else
+local az=typeof(ap.Value)=="table"and ap.Value.Title or ap.Value
+ax.Selected=az==ax.Name
+end
+
+if ax.Selected and not ax.Locked then
+ax.UIElements.TabItem.ImageTransparency=an
+ax.UIElements.TabItem.Frame.Title.TextLabel.TextTransparency=0
+if ax.UIElements.TabIcon then
+ax.UIElements.TabIcon.ImageLabel.ImageTransparency=0
+end
+end
+
 ap.Tabs[aw]=ax
 
 if ar=="Dropdown"then
@@ -33214,6 +33239,7 @@ ap.MenuWidth+6+6+5+5+18+6+6,
 ap.UIElements.MenuCanvas.Size.Y.Scale,
 ap.UIElements.MenuCanvas.Size.Y.Offset
 )
+Callback()
 end
 
 function as.Remove(au,av)
@@ -33242,6 +33268,7 @@ end
 as:Display()
 RecalculateCanvasSize()
 RecalculateListSize()
+Callback()
 end
 end
 
