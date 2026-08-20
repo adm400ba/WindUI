@@ -95,14 +95,8 @@ function Element:New(Config)
     Dropdown.Select = Dropdown.DropdownMenu.Select
     Dropdown.Open = Dropdown.DropdownMenu.Open
     Dropdown.Close = Dropdown.DropdownMenu.Close
-
-    Dropdown.Add = function(self, Value)
-    return self.DropdownMenu:Add(Value)
-    end
-
-    Dropdown.Remove = function(self, Value)
-    return self.DropdownMenu:Remove(Value)
-    end
+    Dropdown.Add = Dropdown.DropdownMenu.Add
+    Dropdown.Remove = Dropdown.DropdownMenu.Remove
 
 	local DropdownIcon = New("ImageLabel", {
 		Image = Creator.Icon("chevrons-up-down")[1],
