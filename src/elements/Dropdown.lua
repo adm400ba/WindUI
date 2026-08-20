@@ -91,15 +91,17 @@ function Element:New(Config)
 	Dropdown.DropdownMenu = CreateDropdown(Config, Dropdown, Element, "Dropdown")
 
 	Dropdown.Display = Dropdown.DropdownMenu.Display
-	Dropdown.Refresh = Dropdown.DropdownMenu.Refresh
-	Dropdown.Select = Dropdown.DropdownMenu.Select
-	Dropdown.Open = Dropdown.DropdownMenu.Open
-	Dropdown.Close = Dropdown.DropdownMenu.Close
-    function Dropdown:Add(Value)
-    return Dropdown.DropdownMenu:Add(Value)
+    Dropdown.Refresh = Dropdown.DropdownMenu.Refresh
+    Dropdown.Select = Dropdown.DropdownMenu.Select
+    Dropdown.Open = Dropdown.DropdownMenu.Open
+    Dropdown.Close = Dropdown.DropdownMenu.Close
+
+    Dropdown.Add = function(self, Value)
+    return self.DropdownMenu:Add(Value)
     end
-    function Dropdown:Remove(Value)
-    return Dropdown.DropdownMenu:Remove(Value)
+
+    Dropdown.Remove = function(self, Value)
+    return self.DropdownMenu:Remove(Value)
     end
 
 	local DropdownIcon = New("ImageLabel", {
