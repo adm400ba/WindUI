@@ -28878,6 +28878,22 @@ local ab=a.load'j'
 local ac=ab.New
 local ad=ab.Tween
 
+local function GetTagTextColor(ae,af)
+if typeof(ae)=="Color3"then
+return ab.GetTextColorForHSB(ae)
+elseif typeof(ae)=="string"then
+return ab.GetTextColorForHSB(
+ab.GetThemeProperty(ae,ab.Theme)
+)
+elseif typeof(ae)=="table"and af then
+return ab.GetTextColorForHSB(
+ab.GetAverageColor(af)
+)
+end
+
+return Color3.new(1,1,1)
+end
+
 function aa.New(ae,af,ag)
 local ah={
 Title=af.Title or"Tag",
@@ -28910,9 +28926,7 @@ AutomaticSize="XY",
 TextSize=ah.TextSize,
 FontFace=Font.new(ab.Font,Enum.FontWeight.SemiBold),
 Text=ah.Title,
-TextColor3=typeof(ah.Color)=="Color3"and ab.GetTextColorForHSB(ah.Color)or typeof(
-ah.Color
-)=="string"and(ab.GetTextColorForHSB(ab.GetThemeProperty(ah.Color,ab.Theme))),
+TextColor3=Color3.new(1,1,1),
 LayoutOrder=9999,
 })
 
@@ -28924,9 +28938,15 @@ for al,am in next,ah.Color do
 ak[al]=am
 end
 
-aj.TextColor3=ab.GetTextColorForHSB(ab.GetAverageColor(ak))
+aj.TextColor3=GetTagTextColor(ah.Color,ak)
 if ai then
-ai.ImageLabel.ImageColor3=ab.GetTextColorForHSB(ab.GetAverageColor(ak))
+ai.ImageLabel.ImageColor3=GetTagTextColor(ah.Color,ak)
+end
+else
+aj.TextColor3=GetTagTextColor(ah.Color)
+
+if ai then
+ai.ImageLabel.ImageColor3=GetTagTextColor(ah.Color)
 end
 end
 
@@ -28981,12 +29001,19 @@ end
 function ah.SetColor(am,an)
 ah.Color=an
 if typeof(an)=="table"then
-local ao=ab.GetAverageColor(an)
-ad(aj,0.06,{TextColor3=ab.GetTextColorForHSB(ao)}):Play()
-local ap=al:FindFirstChildOfClass"UIGradient"or ac("UIGradient",{Parent=al})
-for aq,ar in next,an do
-ap[aq]=ar
+local ao=al:FindFirstChildOfClass"UIGradient"or ac("UIGradient",{Parent=al})
+for ap,aq in next,an do
+ao[ap]=aq
 end
+
+local ap=GetTagTextColor(an,ao)
+
+ad(aj,0.06,{TextColor3=ap}):Play()
+
+if ai then
+ad(ai.ImageLabel,0.06,{ImageColor3=ap}):Play()
+end
+
 ad(al,0.06,{ImageColor3=Color3.new(1,1,1)}):Play()
 else
 if ak then
@@ -29019,7 +29046,7 @@ ai.Parent=al:FindFirstChild"Content"
 if typeof(ah.Color)=="Color3"then
 ai.ImageLabel.ImageColor3=ab.GetTextColorForHSB(ah.Color)
 elseif typeof(ah.Color)=="table"then
-ai.ImageLabel.ImageColor3=ab.GetTextColorForHSB(ab.GetAverageColor(ak))
+ai.ImageLabel.ImageColor3=GetTagTextColor(ah.Color,ak)
 end
 end
 return ah
@@ -29031,16 +29058,41 @@ return ah
 end
 
 ab:OnThemeChange(function(am,an)
-aj.TextColor3=ab.GetTextColorForHSB(ab.GetThemeProperty(ah.Color,ab.Theme))
+if typeof(ah.Color)=="Color3"then
+aj.TextColor3=ab.GetTextColorForHSB(ah.Color)
+
+if ai then
 ai.ImageLabel.ImageColor3=
-ab.GetTextColorForHSB(ab.GetThemeProperty(ah.Color,ab.Theme))
+ab.GetTextColorForHSB(ah.Color)
+end
+elseif typeof(ah.Color)=="string"then
+local ao=ab.GetTextColorForHSB(
+ab.GetThemeProperty(ah.Color,ab.Theme)
+)
+
+aj.TextColor3=ao
+
+if ai then
+ai.ImageLabel.ImageColor3=ao
+end
+elseif typeof(ah.Color)=="table"and ak then
+local ao=GetTagTextColor(
+ah.Color,
+ak
+)
+
+aj.TextColor3=ao
+
+if ai then
+ai.ImageLabel.ImageColor3=ao
+end
+end
 end)
 
 return ah
 end
 
 return aa end function a.F()
-
 local aa=(cloneref or clonereference or function(aa)return aa end)
 
 
