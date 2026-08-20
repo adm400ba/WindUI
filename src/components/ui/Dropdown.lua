@@ -676,6 +676,31 @@ function DropdownMenu.New(Config, Dropdown, Element, Type)
 				end
 			end
 
+			if Dropdown.Multi then
+				local found = false
+				if typeof(Dropdown.Value) == "table" then
+					for _, item in ipairs(Dropdown.Value) do
+						local itemName = typeof(item) == "table" and item.Title or item
+						if itemName == TabMain.Name then
+							found = true
+							break
+						end
+					end
+				end
+				TabMain.Selected = found
+			else
+				local currentValue = typeof(Dropdown.Value) == "table" and Dropdown.Value.Title or Dropdown.Value
+				TabMain.Selected = currentValue == TabMain.Name
+			end
+
+			if TabMain.Selected and not TabMain.Locked then
+				TabMain.UIElements.TabItem.ImageTransparency = TabBackgroundTransparency
+				TabMain.UIElements.TabItem.Frame.Title.TextLabel.TextTransparency = 0
+				if TabMain.UIElements.TabIcon then
+					TabMain.UIElements.TabIcon.ImageLabel.ImageTransparency = 0
+				end
+			end
+
 			Dropdown.Tabs[Index] = TabMain
 
 			if Type == "Dropdown" then
@@ -767,6 +792,7 @@ function DropdownMenu.New(Config, Dropdown, Element, Type)
 			Dropdown.UIElements.MenuCanvas.Size.Y.Scale,
 			Dropdown.UIElements.MenuCanvas.Size.Y.Offset
 		)
+		Callback()
 	end
 
 	function DropdownModule:Remove(ValueToRemove)
@@ -795,6 +821,7 @@ function DropdownMenu.New(Config, Dropdown, Element, Type)
 			DropdownModule:Display()
 			RecalculateCanvasSize()
 			RecalculateListSize()
+			Callback()
 		end
 	end
 
