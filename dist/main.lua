@@ -33463,14 +33463,8 @@ ap.Refresh=ap.DropdownMenu.Refresh
 ap.Select=ap.DropdownMenu.Select
 ap.Open=ap.DropdownMenu.Open
 ap.Close=ap.DropdownMenu.Close
-
-ap.Add=function(aq,ar)
-return aq.DropdownMenu:Add(ar)
-end
-
-ap.Remove=function(aq,ar)
-return aq.DropdownMenu:Remove(ar)
-end
+ap.Add=ap.DropdownMenu.Add
+ap.Remove=ap.DropdownMenu.Remove
 
 ag("ImageLabel",{
 Image=af.Icon"chevrons-up-down"[1],
